@@ -212,7 +212,6 @@ If your droid drives backwards when you push forward, change these:
 Shadow_MD_AstroCan_Standalone/
   Shadow_MD_AstroCan_Standalone.ino   <- Main sketch (just open and upload)
   README.md                           <- This file
-  ERKENNTNISSE.md                     <- Technical development notes
   src/                                <- Bundled USB Host Shield Library 2.0
                                          (all modifications pre-applied)
 ```
