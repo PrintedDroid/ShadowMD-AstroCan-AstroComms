@@ -40,12 +40,16 @@ You need a **CSR8510-based** Bluetooth dongle. Most cheap BT 4.0 dongles use thi
 | Dongle | Max Controllers | Status |
 |--------|-----------------|--------|
 | LogiLink BT0015 (BT 4.0) | 2 simultaneous | **Recommended** |
-| UGREEN CM748 (BT 5.3) | 2 simultaneous | **Confirmed working** |
+| UGREEN CM748 (BT 5.3) | 2 simultaneous | Confirmed working |
+| Asus USB-BT500 (BT 5.0) | 2 simultaneous | **Recommended** |
 | LogiLink BT0048 (BT 4.0) | 2 simultaneous | Confirmed working |
 | CSL Bluetooth 4.0 (Amazon B01N0368AY) | 2 simultaneous | Confirmed working |
-| UGREEN USB Bluetooth 4.0 | 2 simultaneous | Confirmed working |
+| UGREEN USB Bluetooth 4.0 | 2 simultaneous | **Recommended** |
 | Sandberg Nano Bluetooth 4.0 | 2 simultaneous | Confirmed working |
-| Any generic "CSR8510 BT 4.0" dongle | 2 simultaneous | Should work |
+| Pearl BT 4.0 Class 1 (EDR+CSR) | 2 simultaneous | Confirmed working |
+| APLIC ZSB BT Nano Stick v4.0 (302352) | 2 simultaneous | Confirmed working |
+| Gembird BTD-Mini (BT 4.0) | **1 only** | Works, but no dual controller |
+| Any generic "CSR8510 BT 4.0" dongle | 1–2 simultaneous | Should work |
 
 ### NOT Compatible
 
@@ -186,32 +190,32 @@ If your droid drives backwards when you push forward, change these:
 | Analog Stick X | Dome rotation |
 | D-Pad | MarcDuino dome commands |
 
-## Troubleshooting
+### Troubleshooting
 
-### Controller blinks but doesn't connect
+**Controller blinks but doesn't connect:**
 - Make sure you're using a compatible BT dongle (see list above)
-- Try `clear` then `pair` again to re-pair
-- Power-cycle the Arduino (unplug USB power completely, not just reset button)
+- Try `clear` then `pair` to re-pair from scratch
+- Power-cycle the Arduino completely (unplug USB power, not just the reset button)
 
-### "Invalid data" messages in Serial Monitor
-- This is normal for a few seconds after connection — the controller needs time to start sending valid data
-- If it persists, try `debug` command to see detailed BT messages
+**Second controller takes a long time to connect:**
+- This is normal — the second controller may need more time than the first one
+- If it only blinks and doesn't connect, briefly press the PS button on the controller
+- If it still doesn't connect, turn the controller off and back on, then try pairing again
 
-### Only one controller connects
-- Your dongle may only support 1 simultaneous connection (e.g. some CSR4 dongles)
-- Use a BT0015 (LogiLink) or UGREEN CM748 — confirmed to support 2 controllers
+**Only one controller connects:**
+- Your dongle may only support 1 simultaneous connection (e.g. Gembird BTD-Mini)
+- Use a BT0015 (LogiLink), UGREEN CM748, or Asus USB-BT500 — confirmed to support 2 controllers
 
-### Motors don't respond
-- Check Sabertooth/SyRen DIP switch settings
-- Check Serial2 wiring (pins 16/17)
-- Try the `status` command to verify controllers are connected
+**Motors don't respond:**
+- Check motor controller wiring and settings
+- For Sabertooth: DIP switches 1 & 2 Down, all others Up
+- Type `status` to verify controllers are connected
 
 ## Folder Structure
 
 ```
 Shadow_MD_AstroCan_Standalone/
   Shadow_MD_AstroCan_Standalone.ino   <- Main sketch (just open and upload)
-  README.md                           <- This file
   src/                                <- Bundled USB Host Shield Library 2.0
                                          (all modifications pre-applied)
 ```
