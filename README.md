@@ -2,6 +2,20 @@
 
 Author: printed-droid.com
 
+> ### Which version do I need?
+>
+> - **This sketch (AstroCan Standalone)** — for the classic **AstroCan** board.
+>   Uses Sabertooth (feet) + SyRen (dome) via serial motor controllers.
+>   **No BLDC support.**
+> - **AstroComms v1.9 / v2.x with BLDC support** — for the newer AstroComms
+>   Ultra Shield. Supports Sabertooth, BLDC PPM/VESC, and BLDC PWM+DIR
+>   (e.g. Cytron MD-Series, BTS7960).
+>   Repo: **<https://github.com/PrintedDroid/ShadowMD-AstroComms-v1.-v2.x>**
+>
+> **Important**: BLDC does **not** work with AstroCan — the AstroCan board
+> does not route the pins that BLDC mode requires. If you want BLDC, use
+> the AstroComms board and the linked repo above.
+
 ## What Is This?
 
 A complete Arduino Mega sketch for controlling astromech droids (R2-D2 etc.)
@@ -11,6 +25,19 @@ foot drive (Sabertooth), one for dome rotation (SyRen).
 This is a **standalone version** — the USB Host Shield Library is bundled
 in the `src/` folder with all necessary modifications already applied.
 No external library installation required. Just open and upload.
+
+## Recent changes
+
+- **2026-04-21 — RAM / String hardening**: PS3 MAC storage moved from
+  Arduino `String` to fixed `char[18]` buffers. MAC helpers take
+  caller-provided buffers. `marcDuinoButtonPush()` takes `const String&`
+  by reference instead of by value (~50 call sites, one copy saved each).
+  `MakeSongCommand()` returns `const char*` from a static buffer.
+  `output.reserve(384)` + `output.remove(0)` instead of reassigning `""`.
+  `cmdClear` EEPROM-loop ends at the correct MAC boundary (`<` instead of
+  `<=`). No user-visible behavior changes — same CLI, same commands,
+  same pairing workflow. The hardening reduces heap fragmentation on
+  long convention sessions. Details in the upstream `BUGFIXES.md` #9.
 
 ### Why a Modified Library?
 
@@ -40,11 +67,11 @@ You need a **CSR8510-based** Bluetooth dongle. Most cheap BT 4.0 dongles use thi
 | Dongle | Max Controllers | Status |
 |--------|-----------------|--------|
 | LogiLink BT0015 (BT 4.0) | 2 simultaneous | **Recommended** |
-| UGREEN CM748 (BT 5.3) | 2 simultaneous | Confirmed working |
-| Asus USB-BT500 (BT 5.0) | 2 simultaneous | **Recommended** |
+| UGREEN CM748 (BT 5.3) | 2 simultaneous | **Confirmed working** |
+| Asus USB-BT500 (BT 5.0) | 2 simultaneous | Confirmed working |
 | LogiLink BT0048 (BT 4.0) | 2 simultaneous | Confirmed working |
 | CSL Bluetooth 4.0 (Amazon B01N0368AY) | 2 simultaneous | Confirmed working |
-| UGREEN USB Bluetooth 4.0 | 2 simultaneous | **Recommended** |
+| UGREEN USB Bluetooth 4.0 | 2 simultaneous | Confirmed working |
 | Sandberg Nano Bluetooth 4.0 | 2 simultaneous | Confirmed working |
 | Pearl BT 4.0 Class 1 (EDR+CSR) | 2 simultaneous | Confirmed working |
 | APLIC ZSB BT Nano Stick v4.0 (302352) | 2 simultaneous | Confirmed working |
@@ -57,7 +84,28 @@ You need a **CSR8510-based** Bluetooth dongle. Most cheap BT 4.0 dongles use thi
 - **LogiLink BT0058** (Realtek RTL8761B, BT 5.0) — does NOT work
 - **Any Realtek-based dongle** — not compatible with the USB Host Shield Library
 
-**Rule of thumb:** If it says "Bluetooth 5.0" on the package and costs less than 15 EUR, it's almost certainly Realtek-based and won't work. Look for "Bluetooth 4.0" or check that it uses a CSR8510 chip.
+**Rule of thumb:** If it says "Bluetooth 5.0" on the package and costs less than 15 EUR, it's almost certainly Realtek-based and won't work. Look for "Bluetooth 4.0" or check for a CSR8510 chip. Exception: The Asus USB-BT500 (BT 5.0) is confirmed working.
+
+### Troubleshooting
+
+**Controller blinks but doesn't connect:**
+- Make sure you're using a compatible BT dongle (see list above)
+- Try `clear` then `pair` to re-pair from scratch
+- Power-cycle the Arduino completely (unplug USB power, not just the reset button)
+
+**Second controller takes a long time to connect:**
+- This is normal — the second controller may need more time than the first one
+- If it only blinks and doesn't connect, briefly press the PS button on the controller
+- If it still doesn't connect, turn the controller off and back on, then try pairing again
+
+**Only one controller connects:**
+- Your dongle may only support 1 simultaneous connection (e.g. Gembird BTD-Mini)
+- Use a BT0015 (LogiLink), UGREEN CM748, or Asus USB-BT500 — confirmed to support 2 controllers
+
+**Motors don't respond:**
+- Check motor controller wiring and settings
+- For Sabertooth: DIP switches 1 & 2 Down, all others Up
+- Type `status` to verify controllers are connected
 
 ## Arduino IDE
 
@@ -190,32 +238,33 @@ If your droid drives backwards when you push forward, change these:
 | Analog Stick X | Dome rotation |
 | D-Pad | MarcDuino dome commands |
 
-### Troubleshooting
+## Troubleshooting
 
-**Controller blinks but doesn't connect:**
+### Controller blinks but doesn't connect
 - Make sure you're using a compatible BT dongle (see list above)
-- Try `clear` then `pair` to re-pair from scratch
-- Power-cycle the Arduino completely (unplug USB power, not just the reset button)
+- Try `clear` then `pair` again to re-pair
+- Power-cycle the Arduino (unplug USB power completely, not just reset button)
 
-**Second controller takes a long time to connect:**
-- This is normal — the second controller may need more time than the first one
-- If it only blinks and doesn't connect, briefly press the PS button on the controller
-- If it still doesn't connect, turn the controller off and back on, then try pairing again
+### "Invalid data" messages in Serial Monitor
+- This is normal for a few seconds after connection — the controller needs time to start sending valid data
+- If it persists, try `debug` command to see detailed BT messages
 
-**Only one controller connects:**
-- Your dongle may only support 1 simultaneous connection (e.g. Gembird BTD-Mini)
-- Use a BT0015 (LogiLink), UGREEN CM748, or Asus USB-BT500 — confirmed to support 2 controllers
+### Only one controller connects
+- Your dongle may only support 1 simultaneous connection (e.g. some CSR4 dongles)
+- Use a BT0015 (LogiLink) or UGREEN CM748 — confirmed to support 2 controllers
 
-**Motors don't respond:**
-- Check motor controller wiring and settings
-- For Sabertooth: DIP switches 1 & 2 Down, all others Up
-- Type `status` to verify controllers are connected
+### Motors don't respond
+- Check Sabertooth/SyRen DIP switch settings
+- Check Serial2 wiring (pins 16/17)
+- Try the `status` command to verify controllers are connected
 
 ## Folder Structure
 
 ```
 Shadow_MD_AstroCan_Standalone/
   Shadow_MD_AstroCan_Standalone.ino   <- Main sketch (just open and upload)
+  README.md                           <- This file
+  ERKENNTNISSE.md                     <- Technical development notes
   src/                                <- Bundled USB Host Shield Library 2.0
                                          (all modifications pre-applied)
 ```
