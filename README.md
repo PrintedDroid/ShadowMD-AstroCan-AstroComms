@@ -4,17 +4,19 @@ Author: printed-droid.com
 
 > ### Which version do I need?
 >
-> - **This sketch (AstroCan Standalone)** — for the classic **AstroCan** board.
->   Uses Sabertooth (feet) + SyRen (dome) via serial motor controllers.
->   **No BLDC support.**
-> - **AstroComms v1.9 / v2.x with BLDC support** — for the newer AstroComms
->   Ultra Shield. Supports Sabertooth, BLDC PPM/VESC, and BLDC PWM+DIR
->   (e.g. Cytron MD-Series, BTS7960).
+> This repository covers **two different boards**, and which sketch you flash
+> depends on your hardware:
+>
+> - **AstroCan** — uses this sketch (AstroCan Standalone) with Sabertooth (feet)
+>   and SyRen (dome) via serial motor controllers. **No BLDC support.**
+> - **AstroComms Ultra Shield v1.9 / v2.x** — the older platform with BLDC
+>   support. Uses a dedicated sketch. Supports Sabertooth, BLDC PPM/VESC, and
+>   BLDC PWM+DIR (Cytron MD-Series, BTS7960, etc.).
 >   Repo: **<https://github.com/PrintedDroid/ShadowMD-AstroComms-v1.-v2.x>**
 >
 > **Important**: BLDC does **not** work with AstroCan — the AstroCan board
-> does not route the pins that BLDC mode requires. If you want BLDC, use
-> the AstroComms board and the linked repo above.
+> does not route the pins that BLDC mode requires. If you want BLDC, you
+> need the AstroComms Ultra Shield and the linked repo above.
 
 ## What Is This?
 
