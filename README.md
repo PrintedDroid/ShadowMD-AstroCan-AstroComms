@@ -20,6 +20,11 @@ Original Base: Shadow_MD by KnightShade / vint43
 > BLDC does **not** work with AstroCan — the AstroCan board does not
 > route the pins that BLDC mode requires.
 
+## Wiki
+
+- AstroComms: <https://www.printed-droid.com/kb/astrocomms/>
+- AstroCan (legacy): <https://www.printed-droid.com/kb/astrocan-control-system/>
+
 ## What Is This?
 
 A complete Arduino Mega sketch for controlling astromech droids (R2-D2 etc.)
